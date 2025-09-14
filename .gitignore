@@ -19,3 +19,8 @@ target/
 *.iml
 *.hprof
 
+### Maven ###
+target/
+!.mvn/wrapper/maven-wrapper.jar
+.mvn/timing.properties
+
