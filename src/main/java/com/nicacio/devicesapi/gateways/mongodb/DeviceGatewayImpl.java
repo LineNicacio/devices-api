@@ -2,7 +2,7 @@ package com.nicacio.devicesapi.gateways.mongodb;
 
 import com.nicacio.devicesapi.domains.Device;
 import com.nicacio.devicesapi.domains.enums.DeviceStateEnum;
-import com.nicacio.devicesapi.gateways.http.DeviceGateway;
+import com.nicacio.devicesapi.gateways.DeviceGateway;
 import com.nicacio.devicesapi.gateways.mongodb.repository.DeviceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

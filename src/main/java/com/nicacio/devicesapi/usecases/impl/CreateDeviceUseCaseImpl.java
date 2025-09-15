@@ -1,7 +1,7 @@
 package com.nicacio.devicesapi.usecases.impl;
 
 import com.nicacio.devicesapi.domains.Device;
-import com.nicacio.devicesapi.gateways.http.DeviceGateway;
+import com.nicacio.devicesapi.gateways.DeviceGateway;
 import com.nicacio.devicesapi.usecases.CreateDeviceUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

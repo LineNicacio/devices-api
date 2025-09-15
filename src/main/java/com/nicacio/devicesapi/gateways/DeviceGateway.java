@@ -1,4 +1,4 @@
-package com.nicacio.devicesapi.gateways.http;
+package com.nicacio.devicesapi.gateways;
 
 import com.nicacio.devicesapi.domains.Device;
 import com.nicacio.devicesapi.domains.enums.DeviceStateEnum;
