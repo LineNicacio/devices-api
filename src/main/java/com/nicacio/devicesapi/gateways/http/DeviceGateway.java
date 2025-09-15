@@ -1,6 +1,7 @@
 package com.nicacio.devicesapi.gateways.http;
 
 import com.nicacio.devicesapi.domains.Device;
+import com.nicacio.devicesapi.domains.enums.DeviceStateEnum;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -13,7 +14,9 @@ public interface DeviceGateway {
 
     Optional<Device> findById(final String id);
 
-    Page<Device> findByBrand(final String brand, Pageable pageable);
+    Page<Device> findByBrand(final String brand, final Pageable pageable);
+
+    Page<Device> findByState(final DeviceStateEnum state, final Pageable pageable);
 
     Page<Device> findAll(final Pageable pageable);
 }

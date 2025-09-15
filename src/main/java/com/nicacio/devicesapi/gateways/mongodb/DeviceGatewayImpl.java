@@ -1,6 +1,7 @@
 package com.nicacio.devicesapi.gateways.mongodb;
 
 import com.nicacio.devicesapi.domains.Device;
+import com.nicacio.devicesapi.domains.enums.DeviceStateEnum;
 import com.nicacio.devicesapi.gateways.http.DeviceGateway;
 import com.nicacio.devicesapi.gateways.mongodb.repository.DeviceRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,11 @@ public class DeviceGatewayImpl implements DeviceGateway {
     @Override
     public Page<Device> findByBrand(final String brand, final Pageable pageable) {
         return repository.findByBrandIgnoreCase(brand, pageable);
+    }
+
+    @Override
+    public Page<Device> findByState(final DeviceStateEnum state, final Pageable pageable) {
+        return repository.findByState(state, pageable);
     }
 
     @Override

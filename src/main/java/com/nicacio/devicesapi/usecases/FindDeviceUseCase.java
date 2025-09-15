@@ -1,6 +1,7 @@
 package com.nicacio.devicesapi.usecases;
 
 import com.nicacio.devicesapi.domains.Device;
+import com.nicacio.devicesapi.domains.enums.DeviceStateEnum;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -11,4 +12,6 @@ public interface FindDeviceUseCase {
     Page<Device> all(final Pageable pageable);
 
     Page<Device> byBrand(final String brand, Pageable pageable);
+
+    Page<Device> byState(final DeviceStateEnum state, Pageable pageable);
 }

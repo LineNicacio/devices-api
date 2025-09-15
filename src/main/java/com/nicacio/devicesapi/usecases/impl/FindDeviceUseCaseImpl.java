@@ -1,6 +1,7 @@
 package com.nicacio.devicesapi.usecases.impl;
 
 import com.nicacio.devicesapi.domains.Device;
+import com.nicacio.devicesapi.domains.enums.DeviceStateEnum;
 import com.nicacio.devicesapi.gateways.http.DeviceGateway;
 import com.nicacio.devicesapi.usecases.FindDeviceUseCase;
 import com.nicacio.devicesapi.usecases.exceptions.DeviceNotFoundException;
@@ -32,5 +33,10 @@ public class FindDeviceUseCaseImpl implements FindDeviceUseCase {
     @Override
     public Page<Device> byBrand(final String brand, final Pageable pageable) {
         return deviceGateway.findByBrand(brand, pageable);
+    }
+
+    @Override
+    public Page<Device> byState(final DeviceStateEnum state, final Pageable pageable) {
+        return deviceGateway.findByState(state, pageable);
     }
 }

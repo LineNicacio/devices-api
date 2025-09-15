@@ -1,6 +1,7 @@
 package com.nicacio.devicesapi.gateways.http.controllers;
 
 import com.nicacio.devicesapi.domains.Device;
+import com.nicacio.devicesapi.domains.enums.DeviceStateEnum;
 import com.nicacio.devicesapi.gateways.http.mappers.DeviceMapper;
 import com.nicacio.devicesapi.gateways.http.resources.DeviceRequest;
 import com.nicacio.devicesapi.gateways.http.resources.DeviceResponse;
@@ -59,6 +60,19 @@ public class DevicesController {
 
         Pageable pageable = PageRequest.of(page, size);
         Page<Device> pageResult = findDeviceUseCase.byBrand(brand, pageable);
+        Page<DeviceResponse> responsePage = pageResult.map(deviceMapper::toResponse);
+
+        return ResponseEntity.ok(responsePage);
+    }
+
+    @GetMapping("/state/{state}")
+    public ResponseEntity<Page<DeviceResponse>> findByState(
+            @PathVariable final DeviceStateEnum state,
+            @RequestParam(defaultValue = "0") final int page,
+            @RequestParam(defaultValue = "10") final int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Device> pageResult = findDeviceUseCase.byState(state, pageable);
         Page<DeviceResponse> responsePage = pageResult.map(deviceMapper::toResponse);
 
         return ResponseEntity.ok(responsePage);
