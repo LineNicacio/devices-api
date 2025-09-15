@@ -9,8 +9,10 @@ import com.nicacio.devicesapi.gateways.http.resources.DeviceRequest;
 import com.nicacio.devicesapi.gateways.http.resources.DeviceResponse;
 import com.nicacio.devicesapi.gateways.http.resources.DeviceUpdateRequest;
 import com.nicacio.devicesapi.usecases.CreateDeviceUseCase;
+import com.nicacio.devicesapi.usecases.DeleteDeviceUseCase;
 import com.nicacio.devicesapi.usecases.FindDeviceUseCase;
 import com.nicacio.devicesapi.usecases.UpdateDeviceUseCase;
+import com.nicacio.devicesapi.usecases.exceptions.DeviceDeletionNotAllowedException;
 import com.nicacio.devicesapi.usecases.exceptions.DeviceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,6 +35,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -54,6 +57,9 @@ class DevicesControllerTest {
 
     @Mock
     private UpdateDeviceUseCase updateDeviceUseCase;
+
+    @Mock
+    private DeleteDeviceUseCase deleteDeviceUseCase;
 
     @InjectMocks
     private DevicesController devicesController;
@@ -285,6 +291,22 @@ class DevicesControllerTest {
                 .andExpect(jsonPath("$.content.length()").value(devices.size()))
                 .andExpect(jsonPath("$.content[0].id").value("device-1"))
                 .andExpect(jsonPath("$.content[1].id").value("device-2"));
+    }
+
+    @Test
+    void shouldReturnBadRequestWhenDeviceIsInUseAndCannotBeDeleted() throws Exception {
+        // given
+        String id = "device-in-use";
+        doThrow(new DeviceDeletionNotAllowedException("Device with id " + id + " is currently in use"))
+                .when(deleteDeviceUseCase).execute(id);
+
+        // when - then
+        mockMvc.perform(delete("/api/v1/devices/{id}", id))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.error").value("Device Deletion Not Allowed"))
+                .andExpect(jsonPath("$.message").value("Device with id " + id + " is currently in use"))
+                .andExpect(jsonPath("$.timestamp").exists());
     }
 
     private DeviceRequest buildRequest() {
