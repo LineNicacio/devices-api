@@ -3,6 +3,7 @@ package com.nicacio.devicesapi.gateways.http.mappers;
 import com.nicacio.devicesapi.domains.Device;
 import com.nicacio.devicesapi.gateways.http.resources.DeviceRequest;
 import com.nicacio.devicesapi.gateways.http.resources.DeviceResponse;
+import com.nicacio.devicesapi.gateways.http.resources.DeviceUpdateRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -21,6 +22,8 @@ public interface DeviceMapper {
     }
 
     Device toDomain(DeviceRequest request);
+
+    Device toDomain(DeviceUpdateRequest request);
 
     @Mapping(target = "createdAt", source = "createdAt", qualifiedByName = "instantToOffset")
     DeviceResponse toResponse(Device device);

@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -17,5 +18,15 @@ public class DeviceGatewayImpl implements DeviceGateway {
     @Override
     public Device save(final Device device) {
         return repository.save(device.withCreatedAt(Instant.now()));
+    }
+
+    @Override
+    public Device update(final Device device) {
+        return repository.save(device);
+    }
+
+    @Override
+    public Optional<Device> findById(final String id) {
+        return repository.findById(id);
     }
 }

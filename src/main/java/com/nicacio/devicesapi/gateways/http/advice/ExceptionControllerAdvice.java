@@ -2,6 +2,8 @@ package com.nicacio.devicesapi.gateways.http.advice;
 
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.nicacio.devicesapi.usecases.exceptions.DeviceNotFoundException;
+import com.nicacio.devicesapi.usecases.exceptions.DeviceUpdateNotAllowedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -65,5 +68,27 @@ public class ExceptionControllerAdvice {
 
         body.put("error", message);
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(DeviceNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleDeviceNotFoundException(DeviceNotFoundException ex) {
+        Map<String, Object> errorBody = new HashMap<>();
+        errorBody.put("timestamp", OffsetDateTime.now());
+        errorBody.put("status", HttpStatus.NOT_FOUND.value());
+        errorBody.put("error", "Device Not Found");
+        errorBody.put("message", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorBody);
+    }
+
+    @ExceptionHandler(DeviceUpdateNotAllowedException.class)
+    public ResponseEntity<Map<String, Object>> handleDeviceUpdateNotAllowedException(DeviceUpdateNotAllowedException ex) {
+        Map<String, Object> errorBody = new HashMap<>();
+        errorBody.put("timestamp", OffsetDateTime.now());
+        errorBody.put("status", HttpStatus.BAD_REQUEST.value());
+        errorBody.put("error", "Update Not Allowed");
+        errorBody.put("message", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorBody);
     }
 }
