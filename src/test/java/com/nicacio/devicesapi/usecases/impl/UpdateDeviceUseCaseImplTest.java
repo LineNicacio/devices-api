@@ -172,6 +172,27 @@ class UpdateDeviceUseCaseImplTest {
         verify(deviceGateway).update(result);
     }
 
+    @Test
+    void shouldAllowUpdateWhenNameAndBrandAreSameAndStateIsInUse() {
+        // given
+        String id = "device-123";
+        Device existingDevice = buildDevice(id, "SameName", "SameBrand", DeviceStateEnum.IN_USE);
+        Device updatedInfo = buildDevice(id, "SameName", "SameBrand", DeviceStateEnum.IN_USE); // mesmo nome e brand
+
+        when(deviceGateway.findById(id)).thenReturn(Optional.of(existingDevice));
+        when(deviceGateway.update(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // when
+        Device result = updateDeviceUseCase.execute(updatedInfo);
+
+        // then
+        assertThat(result.getName()).isEqualTo("SameName");
+        assertThat(result.getBrand()).isEqualTo("SameBrand");
+        assertThat(result.getState()).isEqualTo(DeviceStateEnum.IN_USE);
+
+        verify(deviceGateway).update(result);
+    }
+
     private Device buildDevice(String id, String name, String brand, DeviceStateEnum state) {
         return new Device(
                 id,

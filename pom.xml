@@ -130,6 +130,7 @@
                         </goals>
                         <configuration>
                             <excludes>
+                                <exclude>**/configurations/**</exclude>
                                 <exclude>**/domains/**</exclude>
                                 <exclude>**/gateways/mongodb/**</exclude>
                                 <exclude>**/gateways/http/advice/**</exclude>
@@ -147,6 +148,7 @@
                         </goals>
                         <configuration>
                             <excludes>
+                                <exclude>**/configurations/**</exclude>
                                 <exclude>**/domains/**</exclude>
                                 <exclude>**/gateways/mongodb/**</exclude>
                                 <exclude>**/gateways/http/advice/**</exclude>
