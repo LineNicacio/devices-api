@@ -27,26 +27,6 @@ public class DevicesController {
     private final CreateDeviceUseCase createDeviceUseCase;
     private final UpdateDeviceUseCase updateDeviceUseCase;
 
-    @GetMapping("/{id}")
-    public ResponseEntity<DeviceResponse> findById(@PathVariable String id) {
-        final Device device = findDeviceUseCase.byId(id);
-        return ResponseEntity.ok(deviceMapper.toResponse(device));
-    }
-
-    @GetMapping
-    public ResponseEntity<Page<DeviceResponse>> findAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-
-        Pageable pageable = PageRequest.of(page, size);
-
-        Page<Device> pageResult = findDeviceUseCase.all(pageable);
-        Page<DeviceResponse> responsePage = pageResult.map(deviceMapper::toResponse);
-
-
-        return ResponseEntity.ok(responsePage);
-    }
-
     @PostMapping()
     public ResponseEntity<DeviceResponse> create(@RequestBody @Valid final DeviceRequest deviceRequest) {
 
@@ -57,12 +37,45 @@ public class DevicesController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<DeviceResponse> update(
-            @PathVariable String id,
-            @RequestBody @Valid DeviceUpdateRequest deviceUpdateRequest) {
+            @PathVariable final String id,
+            @RequestBody @Valid final DeviceUpdateRequest deviceUpdateRequest) {
 
         final Device updatedDevice = updateDeviceUseCase.execute(deviceMapper.toDomain(deviceUpdateRequest).withId(id));
 
         return ResponseEntity.ok(deviceMapper.toResponse(updatedDevice));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<DeviceResponse> findById(@PathVariable final String id) {
+        final Device device = findDeviceUseCase.byId(id);
+        return ResponseEntity.ok(deviceMapper.toResponse(device));
+    }
+
+    @GetMapping("/brand/{brand}")
+    public ResponseEntity<Page<DeviceResponse>> findByBrand(
+            @PathVariable final String brand,
+            @RequestParam(defaultValue = "0") final int page,
+            @RequestParam(defaultValue = "10") final int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Device> pageResult = findDeviceUseCase.byBrand(brand, pageable);
+        Page<DeviceResponse> responsePage = pageResult.map(deviceMapper::toResponse);
+
+        return ResponseEntity.ok(responsePage);
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<DeviceResponse>> findAll(
+            @RequestParam(defaultValue = "0") final int page,
+            @RequestParam(defaultValue = "10") final int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Device> pageResult = findDeviceUseCase.all(pageable);
+        Page<DeviceResponse> responsePage = pageResult.map(deviceMapper::toResponse);
+
+
+        return ResponseEntity.ok(responsePage);
     }
 
 }

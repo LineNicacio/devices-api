@@ -7,11 +7,13 @@ import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 
 public interface DeviceGateway {
-    Device save(Device device);
+    Device save(final Device device);
 
-    Device update(Device device);
+    Device update(final Device device);
 
-    Optional<Device> findById(String id);
+    Optional<Device> findById(final String id);
 
-    Page<Device> findAll(Pageable pageable);
+    Page<Device> findByBrand(final String brand, Pageable pageable);
+
+    Page<Device> findAll(final Pageable pageable);
 }

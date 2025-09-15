@@ -33,6 +33,11 @@ public class DeviceGatewayImpl implements DeviceGateway {
     }
 
     @Override
+    public Page<Device> findByBrand(final String brand, final Pageable pageable) {
+        return repository.findByBrandIgnoreCase(brand, pageable);
+    }
+
+    @Override
     public Page<Device> findAll(final Pageable pageable) {
         return repository.findAll(pageable);
     }

@@ -28,4 +28,9 @@ public class FindDeviceUseCaseImpl implements FindDeviceUseCase {
     public Page<Device> all(final Pageable pageable) {
         return deviceGateway.findAll(pageable);
     }
+
+    @Override
+    public Page<Device> byBrand(final String brand, final Pageable pageable) {
+        return deviceGateway.findByBrand(brand, pageable);
+    }
 }

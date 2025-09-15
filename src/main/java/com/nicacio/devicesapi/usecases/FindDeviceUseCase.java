@@ -6,7 +6,9 @@ import org.springframework.data.domain.Pageable;
 
 
 public interface FindDeviceUseCase {
-    Device byId(String id);
+    Device byId(final String id);
 
-    Page<Device> all(Pageable pageable);
+    Page<Device> all(final Pageable pageable);
+
+    Page<Device> byBrand(final String brand, Pageable pageable);
 }
