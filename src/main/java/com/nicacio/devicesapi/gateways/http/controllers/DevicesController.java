@@ -1,6 +1,6 @@
 package com.nicacio.devicesapi.gateways.http.controllers;
 
-import com.nicacio.devicesapi.domains.enums.Device;
+import com.nicacio.devicesapi.domains.Device;
 import com.nicacio.devicesapi.gateways.http.mappers.DeviceMapper;
 import com.nicacio.devicesapi.gateways.http.resources.DeviceRequest;
 import com.nicacio.devicesapi.gateways.http.resources.DeviceResponse;

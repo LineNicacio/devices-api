@@ -1,6 +1,6 @@
 package com.nicacio.devicesapi.usecases.impl;
 
-import com.nicacio.devicesapi.domains.enums.Device;
+import com.nicacio.devicesapi.domains.Device;
 import com.nicacio.devicesapi.gateways.http.DeviceGateway;
 import com.nicacio.devicesapi.usecases.CreateDeviceUseCase;
 import lombok.RequiredArgsConstructor;

@@ -1,8 +1,8 @@
-package com.nicacio.devicesapi.gateways.http.mongodb;
+package com.nicacio.devicesapi.gateways.mongodb;
 
-import com.nicacio.devicesapi.domains.enums.Device;
+import com.nicacio.devicesapi.domains.Device;
 import com.nicacio.devicesapi.gateways.http.DeviceGateway;
-import com.nicacio.devicesapi.gateways.http.mongodb.repository.DeviceRepository;
+import com.nicacio.devicesapi.gateways.mongodb.repository.DeviceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

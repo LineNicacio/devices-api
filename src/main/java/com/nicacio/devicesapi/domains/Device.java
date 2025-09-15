@@ -1,5 +1,6 @@
-package com.nicacio.devicesapi.domains.enums;
+package com.nicacio.devicesapi.domains;
 
+import com.nicacio.devicesapi.domains.enums.DeviceStateEnum;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.With;
