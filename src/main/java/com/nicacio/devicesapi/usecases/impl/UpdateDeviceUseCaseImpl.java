@@ -46,11 +46,13 @@ public class UpdateDeviceUseCaseImpl implements UpdateDeviceUseCase {
     }
 
     private boolean isNameBeingUpdated(final Device newDevice, final Device oldDevice) {
-        return newDevice.getName() != null && !newDevice.getName().equals(oldDevice.getName());
+        return newDevice.getName() != null
+                && !newDevice.getName().equals(oldDevice.getName());
     }
 
     private boolean isBrandBeingUpdated(final Device newDevice, final Device oldDevice) {
-        return newDevice.getBrand() != null && !newDevice.getBrand().equals(oldDevice.getBrand());
+        return newDevice.getBrand() != null
+                && !newDevice.getBrand().equals(oldDevice.getBrand());
     }
 
     private boolean isNameOrBrandBeingUpdated(final Device newDevice, final Device oldDevice) {

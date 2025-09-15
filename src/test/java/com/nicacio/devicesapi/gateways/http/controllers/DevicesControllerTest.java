@@ -6,7 +6,9 @@ import com.nicacio.devicesapi.domains.enums.DeviceStateEnum;
 import com.nicacio.devicesapi.gateways.http.mappers.DeviceMapper;
 import com.nicacio.devicesapi.gateways.http.resources.DeviceRequest;
 import com.nicacio.devicesapi.gateways.http.resources.DeviceResponse;
+import com.nicacio.devicesapi.gateways.http.resources.DeviceUpdateRequest;
 import com.nicacio.devicesapi.usecases.CreateDeviceUseCase;
+import com.nicacio.devicesapi.usecases.UpdateDeviceUseCase;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,6 +24,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -37,13 +40,20 @@ class DevicesControllerTest {
     @Mock
     private CreateDeviceUseCase createDeviceUseCase;
 
+    @Mock
+    private UpdateDeviceUseCase updateDeviceUseCase;
+
     @InjectMocks
     private DevicesController devicesController;
 
     private DeviceRequest validRequest;
+    private DeviceUpdateRequest validUpdateRequest;
     private Device domainDevice;
+    private Device domainDeviceWithId;
     private Device createdDevice;
+    private Device updatedDevice;
     private DeviceResponse response;
+
 
     @BeforeEach
     void setUp() {
@@ -52,6 +62,9 @@ class DevicesControllerTest {
         validRequest = buildRequest();
         domainDevice = buildDevice(null);
         createdDevice = buildDevice("abc123");
+        validUpdateRequest = buildUpdateRequest();
+        domainDeviceWithId = buildDevice("abc123");
+        updatedDevice = buildDevice("abc123").withName("Updated Device");
         response = buildResponse("abc123");
     }
 
@@ -110,6 +123,25 @@ class DevicesControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
+    @Test
+    void shouldUpdateDeviceSuccessfully() throws Exception {
+        // given
+        when(deviceMapper.toDomain(validUpdateRequest)).thenReturn(domainDeviceWithId.withId("abc123"));
+        when(updateDeviceUseCase.execute(domainDeviceWithId.withId("abc123"))).thenReturn(updatedDevice);
+        when(deviceMapper.toResponse(updatedDevice)).thenReturn(response.withName("Updated Device").withBrand("UpdatedBrand"));
+
+        // when - then
+        mockMvc.perform(patch("/api/v1/devices/{id}", "abc123")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validUpdateRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("abc123"))
+                .andExpect(jsonPath("$.name").value("Updated Device"))
+                .andExpect(jsonPath("$.brand").value("UpdatedBrand"))
+                .andExpect(jsonPath("$.state").value("AVAILABLE"))
+                .andExpect(jsonPath("$.createdAt").exists());
+    }
+
 
     private DeviceRequest buildRequest() {
         return new DeviceRequest(
@@ -136,6 +168,14 @@ class DevicesControllerTest {
                 "TestBrand",
                 DeviceStateEnum.AVAILABLE,
                 OffsetDateTime.ofInstant(Instant.parse("2025-09-14T23:00:00Z"), ZoneOffset.UTC)
+        );
+    }
+
+    private DeviceUpdateRequest buildUpdateRequest() {
+        return new DeviceUpdateRequest(
+                "Updated Device",
+                "UpdatedBrand",
+                DeviceStateEnum.AVAILABLE
         );
     }
 }
