@@ -4,6 +4,8 @@ import com.nicacio.devicesapi.domains.Device;
 import com.nicacio.devicesapi.gateways.http.DeviceGateway;
 import com.nicacio.devicesapi.gateways.mongodb.repository.DeviceRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -28,5 +30,10 @@ public class DeviceGatewayImpl implements DeviceGateway {
     @Override
     public Optional<Device> findById(final String id) {
         return repository.findById(id);
+    }
+
+    @Override
+    public Page<Device> findAll(final Pageable pageable) {
+        return repository.findAll(pageable);
     }
 }

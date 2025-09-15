@@ -10,6 +10,8 @@ import com.nicacio.devicesapi.usecases.FindDeviceUseCase;
 import com.nicacio.devicesapi.usecases.UpdateDeviceUseCase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,9 +27,17 @@ public class DevicesController {
     private final UpdateDeviceUseCase updateDeviceUseCase;
 
     @GetMapping("/{id}")
-    public ResponseEntity<DeviceResponse> getById(@PathVariable String id) {
+    public ResponseEntity<DeviceResponse> findById(@PathVariable String id) {
         final Device device = findDeviceUseCase.byId(id);
         return ResponseEntity.ok(deviceMapper.toResponse(device));
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<DeviceResponse>> findAll(final Pageable pageable) {
+        final Page<Device> page = findDeviceUseCase.all(pageable);
+        final Page<DeviceResponse> responsePage = page.map(deviceMapper::toResponse);
+
+        return ResponseEntity.ok(responsePage);
     }
 
     @PostMapping()
