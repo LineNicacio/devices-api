@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:latest
+    container_name: devices-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  mongodb:
+    image: mongo:latest
+    container_name: devices-mongo
+    environment:
+      - MONGO_INITDB_DATABASE=devices
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+    ports:
+      - "27017:27017"
+
+  devicesapi:
+    build: .
+    container_name: devices-api
+    ports:
+      - "8080:8080"
+    depends_on:
+      mongodb:
+        condition: service_started
+      redis:
+        condition: service_healthy
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://root:secret@mongodb:27017/devices?authSource=admin
+      - SPRING_REDIS_HOST=devices-redis
+      - SPRING_REDIS_PORT=6379
