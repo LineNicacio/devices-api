@@ -3,12 +3,15 @@ package com.nicacio.devicesapi.gateways.http.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nicacio.devicesapi.domains.Device;
 import com.nicacio.devicesapi.domains.enums.DeviceStateEnum;
+import com.nicacio.devicesapi.gateways.http.advice.ExceptionControllerAdvice;
 import com.nicacio.devicesapi.gateways.http.mappers.DeviceMapper;
 import com.nicacio.devicesapi.gateways.http.resources.DeviceRequest;
 import com.nicacio.devicesapi.gateways.http.resources.DeviceResponse;
 import com.nicacio.devicesapi.gateways.http.resources.DeviceUpdateRequest;
 import com.nicacio.devicesapi.usecases.CreateDeviceUseCase;
+import com.nicacio.devicesapi.usecases.FindDeviceUseCase;
 import com.nicacio.devicesapi.usecases.UpdateDeviceUseCase;
+import com.nicacio.devicesapi.usecases.exceptions.DeviceNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,8 +27,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -36,6 +38,9 @@ class DevicesControllerTest {
     private MockMvc mockMvc;
     @Mock
     private DeviceMapper deviceMapper;
+
+    @Mock
+    private FindDeviceUseCase findDeviceUseCase;
 
     @Mock
     private CreateDeviceUseCase createDeviceUseCase;
@@ -58,6 +63,7 @@ class DevicesControllerTest {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(devicesController)
+                .setControllerAdvice(ExceptionControllerAdvice.class)
                 .build();
         validRequest = buildRequest();
         domainDevice = buildDevice(null);
@@ -140,6 +146,38 @@ class DevicesControllerTest {
                 .andExpect(jsonPath("$.brand").value("UpdatedBrand"))
                 .andExpect(jsonPath("$.state").value("AVAILABLE"))
                 .andExpect(jsonPath("$.createdAt").exists());
+    }
+
+    @Test
+    void shouldReturnDeviceByIdSuccessfully() throws Exception {
+        // given
+        String deviceId = "abc123";
+        when(findDeviceUseCase.byId(deviceId)).thenReturn(createdDevice);
+        when(deviceMapper.toResponse(createdDevice)).thenReturn(response);
+
+        // when - then
+        mockMvc.perform(get("/api/v1/devices/{id}", deviceId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value("abc123"))
+                .andExpect(jsonPath("$.name").value("Test Device"))
+                .andExpect(jsonPath("$.brand").value("TestBrand"))
+                .andExpect(jsonPath("$.state").value("AVAILABLE"))
+                .andExpect(jsonPath("$.createdAt").exists());
+    }
+
+    @Test
+    void shouldReturnNotFoundWhenDeviceDoesNotExist() throws Exception {
+        // given
+        String deviceId = "non-existent-id";
+        when(findDeviceUseCase.byId(deviceId))
+                .thenThrow(new DeviceNotFoundException("Device not found with id " + deviceId));
+
+        // when - then
+        mockMvc.perform(get("/api/v1/devices/{id}", deviceId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Device not found with id " + deviceId));
     }
 
 
