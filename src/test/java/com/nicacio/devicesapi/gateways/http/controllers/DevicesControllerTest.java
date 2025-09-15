@@ -18,6 +18,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -25,7 +29,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -127,6 +133,40 @@ class DevicesControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void shouldReturnPagedDevicesSuccessfully() throws Exception {
+        // given
+        Device device1 = buildDevice("id1");
+        Device device2 = buildDevice("id2");
+
+        Page<Device> devicePage = new PageImpl<>(
+                List.of(device1, device2),
+                PageRequest.of(0, 10),
+                2
+        );
+
+        DeviceResponse response1 = buildResponse("id1");
+        DeviceResponse response2 = buildResponse("id2");
+
+        when(findDeviceUseCase.all(any(Pageable.class))).thenReturn(devicePage);
+
+        when(deviceMapper.toResponse(device1)).thenReturn(response1);
+        when(deviceMapper.toResponse(device2)).thenReturn(response2);
+
+        mockMvc.perform(get("/api/v1/devices")
+                        .param("page", "0")
+                        .param("size", "10")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content.length()").value(2))
+                .andExpect(jsonPath("$.content[0].id").value("id1"))
+                .andExpect(jsonPath("$.content[1].id").value("id2"))
+                .andExpect(jsonPath("$.totalElements").value(2))
+                .andExpect(jsonPath("$.size").value(10))
+                .andExpect(jsonPath("$.number").value(0));
     }
 
     @Test

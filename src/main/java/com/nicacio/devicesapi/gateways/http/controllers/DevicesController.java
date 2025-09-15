@@ -11,6 +11,7 @@ import com.nicacio.devicesapi.usecases.UpdateDeviceUseCase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,9 +34,15 @@ public class DevicesController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<DeviceResponse>> findAll(final Pageable pageable) {
-        final Page<Device> page = findDeviceUseCase.all(pageable);
-        final Page<DeviceResponse> responsePage = page.map(deviceMapper::toResponse);
+    public ResponseEntity<Page<DeviceResponse>> findAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        Page<Device> pageResult = findDeviceUseCase.all(pageable);
+        Page<DeviceResponse> responsePage = pageResult.map(deviceMapper::toResponse);
+
 
         return ResponseEntity.ok(responsePage);
     }
