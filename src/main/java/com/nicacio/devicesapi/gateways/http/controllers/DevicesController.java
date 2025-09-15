@@ -7,6 +7,7 @@ import com.nicacio.devicesapi.gateways.http.resources.DeviceRequest;
 import com.nicacio.devicesapi.gateways.http.resources.DeviceResponse;
 import com.nicacio.devicesapi.gateways.http.resources.DeviceUpdateRequest;
 import com.nicacio.devicesapi.usecases.CreateDeviceUseCase;
+import com.nicacio.devicesapi.usecases.DeleteDeviceUseCase;
 import com.nicacio.devicesapi.usecases.FindDeviceUseCase;
 import com.nicacio.devicesapi.usecases.UpdateDeviceUseCase;
 import jakarta.validation.Valid;
@@ -27,6 +28,7 @@ public class DevicesController {
     private final FindDeviceUseCase findDeviceUseCase;
     private final CreateDeviceUseCase createDeviceUseCase;
     private final UpdateDeviceUseCase updateDeviceUseCase;
+    private final DeleteDeviceUseCase deleteDeviceUseCase;
 
     @PostMapping()
     public ResponseEntity<DeviceResponse> create(@RequestBody @Valid final DeviceRequest deviceRequest) {
@@ -90,6 +92,12 @@ public class DevicesController {
 
 
         return ResponseEntity.ok(responsePage);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteDevice(@PathVariable final String id) {
+        deleteDeviceUseCase.execute(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

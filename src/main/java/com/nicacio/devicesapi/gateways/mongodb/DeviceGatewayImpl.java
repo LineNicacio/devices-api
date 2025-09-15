@@ -19,6 +19,11 @@ public class DeviceGatewayImpl implements DeviceGateway {
     private final DeviceRepository repository;
 
     @Override
+    public void delete(final String id) {
+        repository.deleteById(id);
+    }
+
+    @Override
     public Device save(final Device device) {
         return repository.save(device.withCreatedAt(Instant.now()));
     }

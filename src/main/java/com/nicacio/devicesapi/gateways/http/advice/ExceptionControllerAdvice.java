@@ -2,6 +2,7 @@ package com.nicacio.devicesapi.gateways.http.advice;
 
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.nicacio.devicesapi.usecases.exceptions.DeviceDeletionNotAllowedException;
 import com.nicacio.devicesapi.usecases.exceptions.DeviceNotFoundException;
 import com.nicacio.devicesapi.usecases.exceptions.DeviceUpdateNotAllowedException;
 import org.springframework.http.HttpStatus;
@@ -79,6 +80,17 @@ public class ExceptionControllerAdvice {
         errorBody.put("message", ex.getMessage());
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorBody);
+    }
+
+    @ExceptionHandler(DeviceDeletionNotAllowedException.class)
+    public ResponseEntity<Map<String, Object>> handleDeviceDeletionNotAllowedException(DeviceDeletionNotAllowedException ex) {
+        Map<String, Object> errorBody = new HashMap<>();
+        errorBody.put("timestamp", OffsetDateTime.now());
+        errorBody.put("status", HttpStatus.BAD_REQUEST.value());
+        errorBody.put("error", "Device Deletion Not Allowed");
+        errorBody.put("message", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorBody);
     }
 
     @ExceptionHandler(DeviceUpdateNotAllowedException.class)

@@ -14,6 +14,8 @@ public interface DeviceGateway {
 
     Optional<Device> findById(final String id);
 
+    void delete(final String id);
+
     Page<Device> findByBrand(final String brand, final Pageable pageable);
 
     Page<Device> findByState(final DeviceStateEnum state, final Pageable pageable);
