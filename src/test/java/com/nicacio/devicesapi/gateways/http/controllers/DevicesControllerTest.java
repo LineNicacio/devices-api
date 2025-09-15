@@ -69,7 +69,7 @@ class DevicesControllerTest {
     }
 
     @Test
-    void shouldCreateDeviceSuccessfully() throws Exception {
+    void shouldCreateSuccessfully() throws Exception {
         // given
         when(deviceMapper.toDomain(validRequest)).thenReturn(domainDevice);
         when(createDeviceUseCase.execute(domainDevice)).thenReturn(createdDevice);
@@ -124,7 +124,7 @@ class DevicesControllerTest {
     }
 
     @Test
-    void shouldUpdateDeviceSuccessfully() throws Exception {
+    void shouldUpdateSuccessfully() throws Exception {
         // given
         when(deviceMapper.toDomain(validUpdateRequest)).thenReturn(domainDeviceWithId.withId("abc123"));
         when(updateDeviceUseCase.execute(domainDeviceWithId.withId("abc123"))).thenReturn(updatedDevice);
