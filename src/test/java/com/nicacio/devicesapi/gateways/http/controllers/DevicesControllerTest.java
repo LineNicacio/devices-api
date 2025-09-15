@@ -32,6 +32,7 @@ import java.time.ZoneOffset;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -220,6 +221,40 @@ class DevicesControllerTest {
                 .andExpect(jsonPath("$.message").value("Device not found with id " + deviceId));
     }
 
+    @Test
+    void shouldReturnDevicesByBrand() throws Exception {
+        // given
+        String brand = "TestBrand";
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Device device1 = buildDevice("id1").withBrand(brand);
+        Device device2 = buildDevice("id2").withBrand(brand);
+
+        List<Device> devices = List.of(device1, device2);
+        Page<Device> devicePage = new PageImpl<>(devices, pageable, devices.size());
+
+        DeviceResponse response1 = buildResponse("id1").withBrand(brand);
+        DeviceResponse response2 = buildResponse("id2").withBrand(brand);
+
+        when(findDeviceUseCase.byBrand(eq(brand), any(Pageable.class))).thenReturn(devicePage);
+        when(deviceMapper.toResponse(device1)).thenReturn(response1);
+        when(deviceMapper.toResponse(device2)).thenReturn(response2);
+
+        // when - then
+        mockMvc.perform(get("/api/v1/devices/brand/{brand}", brand)
+                        .param("page", "0")
+                        .param("size", "10")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(2))
+                .andExpect(jsonPath("$.content[0].id").value("id1"))
+                .andExpect(jsonPath("$.content[0].brand").value(brand))
+                .andExpect(jsonPath("$.content[1].id").value("id2"))
+                .andExpect(jsonPath("$.content[1].brand").value(brand))
+                .andExpect(jsonPath("$.totalElements").value(2))
+                .andExpect(jsonPath("$.size").value(10))
+                .andExpect(jsonPath("$.number").value(0));
+    }
 
     private DeviceRequest buildRequest() {
         return new DeviceRequest(
