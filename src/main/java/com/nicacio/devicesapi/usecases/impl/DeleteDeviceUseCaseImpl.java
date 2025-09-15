@@ -8,6 +8,7 @@ import com.nicacio.devicesapi.usecases.exceptions.DeviceDeletionNotAllowedExcept
 import com.nicacio.devicesapi.usecases.exceptions.DeviceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -18,6 +19,7 @@ public class DeleteDeviceUseCaseImpl implements DeleteDeviceUseCase {
     private final DeviceGateway deviceGateway;
 
     @Override
+    @CacheEvict(value = "devices", key = "#id")
     public void execute(final String id) {
 
         final Device device = deviceGateway.findById(id)

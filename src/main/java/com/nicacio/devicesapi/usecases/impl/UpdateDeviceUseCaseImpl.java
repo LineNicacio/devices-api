@@ -8,6 +8,7 @@ import com.nicacio.devicesapi.usecases.exceptions.DeviceNotFoundException;
 import com.nicacio.devicesapi.usecases.exceptions.DeviceUpdateNotAllowedException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -18,6 +19,7 @@ public class UpdateDeviceUseCaseImpl implements UpdateDeviceUseCase {
     private final DeviceGateway deviceGateway;
 
     @Override
+    @CacheEvict(value = "devices", key = "#device.id")
     public Device execute(final Device device) {
         Device databaseDevice = deviceGateway.findById(device.getId())
                 .orElseThrow(() -> new DeviceNotFoundException("Device not found with id " + device.getId()));
