@@ -256,6 +256,37 @@ class DevicesControllerTest {
                 .andExpect(jsonPath("$.number").value(0));
     }
 
+    @Test
+    void shouldReturnDevicesByState() throws Exception {
+        // given
+        DeviceStateEnum state = DeviceStateEnum.AVAILABLE;
+        Pageable pageable = PageRequest.of(0, 10);
+
+        List<Device> devices = List.of(buildDevice("device-1"), buildDevice("device-2"));
+        Page<Device> page = new PageImpl<>(devices, pageable, devices.size());
+
+        List<DeviceResponse> deviceResponses = devices.stream()
+                .map(device -> buildResponse(device.getId()))
+                .toList();
+        Page<DeviceResponse> responsePage = new PageImpl<>(deviceResponses, pageable, deviceResponses.size());
+
+        when(findDeviceUseCase.byState(state, pageable)).thenReturn(page);
+        when(deviceMapper.toResponse(any(Device.class))).thenAnswer(invocation -> {
+            Device d = invocation.getArgument(0);
+            return buildResponse(d.getId());
+        });
+
+        // when - then
+        mockMvc.perform(get("/api/v1/devices/state/" + state)
+                        .param("page", "0")
+                        .param("size", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content.length()").value(devices.size()))
+                .andExpect(jsonPath("$.content[0].id").value("device-1"))
+                .andExpect(jsonPath("$.content[1].id").value("device-2"));
+    }
+
     private DeviceRequest buildRequest() {
         return new DeviceRequest(
                 "Test Device",
